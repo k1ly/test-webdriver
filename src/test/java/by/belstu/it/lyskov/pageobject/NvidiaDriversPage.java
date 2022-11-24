@@ -1,5 +1,8 @@
 package by.belstu.it.lyskov.pageobject;
 
+import by.belstu.it.lyskov.model.NvidiaDriver;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -13,37 +16,39 @@ import java.time.Duration;
 public class NvidiaDriversPage extends AbstractPage {
     public static final String SEARCH_PAGE_URL = "https://www.nvidia.com/ru-ru/geforce/drivers/";
 
+    Logger logger = LogManager.getRootLogger();
+
     @FindBy(id = "languagebutton-ru")
     private WebElement localePromptRuButton;
 
-    private By productParamLocator = By.id("manualSearch-0-button");
-    private By productListLocator = By.cssSelector("ul#manualSearch-0-menu li");
-    private String productListElementLocatorPart = "//ul[@id='manualSearch-0-menu']/li[text()='";
+    private final By productParamLocator = By.id("manualSearch-0-button");
+    private final By productListLocator = By.cssSelector("ul#manualSearch-0-menu li");
+    private final String productListElementLocatorPart = "//ul[@id='manualSearch-0-menu']/li[text()='";
 
-    private By seriesParamLocator = By.id("manualSearch-1-button");
-    private By seriesListLocator = By.cssSelector("ul#manualSearch-1-menu li");
-    private String seriesListElementLocatorPart = "//ul[@id='manualSearch-1-menu']/li[text()='";
+    private final By seriesParamLocator = By.id("manualSearch-1-button");
+    private final By seriesListLocator = By.cssSelector("ul#manualSearch-1-menu li");
+    private final String seriesListElementLocatorPart = "//ul[@id='manualSearch-1-menu']/li[text()='";
 
-    private String defaultModelParamTextLocator = "//span[@id='manualSearch-2-button']/span[@class='ui-selectmenu-text' and text()='";
-    private String defaultModelParam_GeForceRTX3090Ti = "GeForce RTX 3090 Ti";
-    private String defaultModelParam_GeForceGTX980 = "GeForce GTX 980";
-    private By modelParamLocator = By.id("manualSearch-2-button");
-    private By modelListLocator = By.cssSelector("ul#manualSearch-2-menu li");
-    private String modelListElementLocatorPart = "//ul[@id='manualSearch-2-menu']/li[text()='";
+    private final String defaultModelParamTextLocator = "//span[@id='manualSearch-2-button']/span[@class='ui-selectmenu-text' and text()='";
+    private final String defaultModelParam_GeForceRTX3090Ti = "GeForce RTX 3090 Ti";
+    private final String defaultModelParam_GeForceGTX980 = "GeForce GTX 980";
+    private final By modelParamLocator = By.id("manualSearch-2-button");
+    private final By modelListLocator = By.cssSelector("ul#manualSearch-2-menu li");
+    private final String modelListElementLocatorPart = "//ul[@id='manualSearch-2-menu']/li[text()='";
 
-    private By osParamLocator = By.id("manualSearch-4-button");
-    private By osListLocator = By.cssSelector("ul#manualSearch-4-menu li");
-    private String osListElementLocatorPart = "//ul[@id='manualSearch-4-menu']/li[text()='";
+    private final By osParamLocator = By.id("manualSearch-4-button");
+    private final By osListLocator = By.cssSelector("ul#manualSearch-4-menu li");
+    private final String osListElementLocatorPart = "//ul[@id='manualSearch-4-menu']/li[text()='";
 
-    private By langParamLocator = By.id("manualSearch-5-button");
-    private By langListLocator = By.cssSelector("ul#manualSearch-5-menu li");
-    private String langListElementLocatorPart = "//ul[@id='manualSearch-5-menu']/li[text()='";
+    private final By langParamLocator = By.id("manualSearch-5-button");
+    private final By langListLocator = By.cssSelector("ul#manualSearch-5-menu li");
+    private final String langListElementLocatorPart = "//ul[@id='manualSearch-5-menu']/li[text()='";
 
-    private By typeParamLocator = By.id("driverType-button");
-    private By typeListLocator = By.cssSelector("ul#driverType-menu li");
-    private String typeListElementLocatorPart = "//ul[@id='driverType-menu']/li[text()='";
+    private final By typeParamLocator = By.id("driverType-button");
+    private final By typeListLocator = By.cssSelector("ul#driverType-menu li");
+    private final String typeListElementLocatorPart = "//ul[@id='driverType-menu']/li[text()='";
 
-    private By searchButton = By.id("manualSearchButton");
+    private final By searchButton = By.id("manualSearchButton");
 
     public NvidiaDriversPage(WebDriver webDriver) {
         super(webDriver);
@@ -51,22 +56,31 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversPage openPage() {
         webDriver.get(SEARCH_PAGE_URL);
+        logger.info("Nvidia drivers page opened");
         return this;
     }
 
     public NvidiaDriversPage selectPageLocaleRu() {
         new WebDriverWait(webDriver, Duration.ofSeconds(3))
-                .until(ExpectedConditions.elementToBeClickable(localePromptRuButton));
-        localePromptRuButton.click();
+                .until(ExpectedConditions.elementToBeClickable(localePromptRuButton)).click();
         return this;
     }
 
+    public NvidiaDriversPage fillForm(NvidiaDriver nvidiaDriver) {
+        return this.selectProduct(nvidiaDriver.getProduct())
+                .selectSeries(nvidiaDriver.getSeries())
+                .selectModel(nvidiaDriver.getModel())
+                .selectOS(nvidiaDriver.getOs())
+                .selectLang(nvidiaDriver.getLang())
+                .selectType(nvidiaDriver.getType());
+    }
+
     public NvidiaDriversPage selectProduct(String product) {
-        new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
+        WebElement productParam = new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(productParamLocator));
-        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);javascript:window.scrollBy(0,-100);",
-                webDriver.findElement(productParamLocator));
-        webDriver.findElement(productParamLocator).click();
+        ((JavascriptExecutor) webDriver)
+                .executeScript("arguments[0].scrollIntoView(true);javascript:window.scrollBy(0,-100);", productParam);
+        productParam.click();
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(productListLocator));
         webDriver.findElement(By.xpath(productListElementLocatorPart + product + "']")).click();
@@ -75,8 +89,7 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversPage selectSeries(String series) {
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
-                .until(ExpectedConditions.elementToBeClickable(seriesParamLocator));
-        webDriver.findElement(seriesParamLocator).click();
+                .until(ExpectedConditions.elementToBeClickable(seriesParamLocator)).click();
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(seriesListLocator));
         webDriver.findElement(By.xpath(seriesListElementLocatorPart + series + "']")).click();
@@ -100,8 +113,7 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversPage selectOS(String os) {
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
-                .until(ExpectedConditions.elementToBeClickable(osParamLocator));
-        webDriver.findElement(osParamLocator).click();
+                .until(ExpectedConditions.elementToBeClickable(osParamLocator)).click();
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(osListLocator));
         webDriver.findElement(By.xpath(osListElementLocatorPart + os + "']")).click();
@@ -110,8 +122,7 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversPage selectLang(String lang) {
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
-                .until(ExpectedConditions.elementToBeClickable(langParamLocator));
-        webDriver.findElement(langParamLocator).click();
+                .until(ExpectedConditions.elementToBeClickable(langParamLocator)).click();
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(langListLocator));
         webDriver.findElement(By.xpath(langListElementLocatorPart + lang + "']")).click();
@@ -120,8 +131,7 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversPage selectType(String type) {
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
-                .until(ExpectedConditions.elementToBeClickable(typeParamLocator));
-        webDriver.findElement(typeParamLocator).click();
+                .until(ExpectedConditions.elementToBeClickable(typeParamLocator)).click();
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
                 .until(ExpectedConditions.elementToBeClickable(typeListLocator));
         webDriver.findElement(By.xpath(typeListElementLocatorPart + type + "']")).click();
@@ -130,8 +140,8 @@ public class NvidiaDriversPage extends AbstractPage {
 
     public NvidiaDriversSearchResultsPage searchForDrivers() {
         new WebDriverWait(webDriver, Duration.ofSeconds(WAIT_TIMEOUT_SECONDS))
-                .until(ExpectedConditions.presenceOfElementLocated(searchButton));
-        webDriver.findElement(searchButton).click();
+                .until(ExpectedConditions.elementToBeClickable(searchButton)).click();
+        logger.info("Nvidia drivers search completed");
         return new NvidiaDriversSearchResultsPage(webDriver);
     }
 }

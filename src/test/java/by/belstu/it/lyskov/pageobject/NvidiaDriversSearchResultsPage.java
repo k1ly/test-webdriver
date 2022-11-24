@@ -10,8 +10,8 @@ import java.time.Duration;
 
 public class NvidiaDriversSearchResultsPage extends AbstractPage {
 
-    private By searchResultsLocator = By.cssSelector("div#betaSearchResults div.driverBox");
-    private By emptyResultLocator = By.cssSelector("div#manualSearchNoResultsFound");
+    private final By searchResultsLocator = By.cssSelector("div#betaSearchResults div.driverBox");
+    private final By emptyResultLocator = By.cssSelector("div#manualSearchNoResultsFound");
 
     public NvidiaDriversSearchResultsPage(WebDriver webDriver) {
         super(webDriver);

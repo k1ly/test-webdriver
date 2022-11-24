@@ -1,4 +1,4 @@
-package by.belstu.it.lyskov;
+package by.belstu.it.lyskov.test;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
